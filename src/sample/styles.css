@@ -1,0 +1,8 @@
+@font-face {
+    src: url('FlappyBirdy.ttf');
+}
+
+.title{
+    -fx-font-family: "FlappyBirdy";
+    -fx-font-size: 64px;
+}

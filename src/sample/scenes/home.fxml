@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.net.URL?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.Group?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="639.9999000000025" prefWidth="359.9998779296875" style="-fx-background-image: url('file:/home/kamil/Pulpit/bg.png')&#10;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="sample.controllers.PlayerNameController">
+  <children>
+    <Label layoutX="211.0" layoutY="22.0" text="Player:" />
+    <Label fx:id="name" layoutX="277.0" layoutY="22.0" prefWidth="45.0" text="Label" />
+    <Label alignment="CENTER" layoutX="49.0" layoutY="44.0" prefHeight="243.0" prefWidth="262.0" styleClass="title" text="FLAPPY BIRD GAME!" textAlignment="CENTER" wrapText="true">
+      <font>
+        <Font name="System Bold" size="20.0" fx:id="x1" />
+      </font>
+    </Label>
+    <Group fx:id="main_menu" visible="true">
+      <Button layoutX="106.0" layoutY="327.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="147.0" text="Play" />
+      <Button layoutX="106.0" layoutY="390.0" mnemonicParsing="false" onAction="#showPlayerName" prefHeight="53.0" prefWidth="147.0" text="Set player name" textAlignment="CENTER" />
+      <Button layoutX="106.0" layoutY="453.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="147.0" text="Highscore" />
+    </Group>
+    <Pane fx:id="name_menu" layoutX="0.0" layoutY="0.0" prefHeight="582.0" visible="false">
+      <Button layoutX="23.0" layoutY="19.0" mnemonicParsing="false" onAction="#back" text="Back" />
+      <TextField fx:id="input" layoutX="69.0" layoutY="395.0" prefWidth="200.0" />
+      <Label labelFor="$input" layoutX="69.0" layoutY="416.0" prefHeight="28.0" prefWidth="200.0" text="Insert player name">
+        <font>
+          <Font size="16.0" />
+        </font>
+      </Label>
+      <Button fx:id="btn" layoutX="200.0" layoutY="444.0" mnemonicParsing="false" onAction="#setLabelText" text="Submit" />
+    </Pane>
+  </children>
+  <stylesheets>
+    <URL value="@../styles.css" />
+  </stylesheets>
+</AnchorPane>
