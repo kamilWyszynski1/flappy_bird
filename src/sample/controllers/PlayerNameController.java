@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -16,13 +17,17 @@ import java.util.ResourceBundle;
 public class PlayerNameController {
 
     @FXML
-    public TextField input;
+    private TextField input;
     @FXML
-    public Button btn;
+    private Button btn;
     @FXML
-    public Label name;
+    private Label name;
     @FXML
-    public Group main_menu;
+    private Group main_menu;
+    @FXML
+    private Pane highscore;
+    @FXML
+    private Label error;
     @FXML
     private Pane name_menu;
 
@@ -42,7 +47,15 @@ public class PlayerNameController {
 
     @FXML
     private void setLabelText(){
-        name.setText(input.getText());
+        if(input.getText().trim().isEmpty()){
+            error.setText("Name can't be empty!");
+        }
+        else if(input.getText().trim().length() >= 20)
+            error.setText("Name too long!");
+        else {
+            name.setText(input.getText());
+            error.setText("");
+        }
     }
 
     @FXML
@@ -52,8 +65,14 @@ public class PlayerNameController {
     }
 
     @FXML
+    private void showHighscore(){
+        highscore.setVisible(true);
+        main_menu.setVisible(false);
+    }
+    @FXML
     private void back(){
         main_menu.setVisible(true);
         name_menu.setVisible(false);
+        highscore.setVisible(false);
     }
 }
