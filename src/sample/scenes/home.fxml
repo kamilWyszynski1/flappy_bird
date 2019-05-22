@@ -17,7 +17,7 @@
   <Label alignment="CENTER" layoutX="49.0" layoutY="44.0" prefHeight="243.0" prefWidth="262.0" styleClass="title"
          text="FLAPPY BIRD GAME!" textAlignment="CENTER" wrapText="true">
     <font>
-      <Font name="System Bold" size="20.0" fx:id="x1"/>
+      <Font name="System Bold" size="20.0"  />
     </font>
   </Label>
   <Group fx:id="main_menu" visible="true">

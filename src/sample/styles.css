@@ -1,8 +1,13 @@
 @font-face {
-    src: url('FlappyBirdy.ttf');
+    src: url('Flappy-Bird.ttf');
 }
 
 .title{
-    -fx-font-family: "FlappyBirdy";
+    -fx-font-family: "Flappy Bird Regular";
     -fx-font-size: 64px;
+}
+
+.points {
+    -fx-font-family: "Flappy Bird Regular";
+    -fx-font-size: 100px;
 }

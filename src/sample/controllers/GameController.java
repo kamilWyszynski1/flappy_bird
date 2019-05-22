@@ -6,14 +6,13 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.text.Text;
 import javafx.util.Duration;
+import sample.models.PlayerModel;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,6 +26,9 @@ public class GameController{
      * dY += gravity + flapping
      * y += dY
      * */
+    private final PlayerModel playerModel;
+
+
     private int points = 0;
     private boolean run = false;
     private final double gravity = 1;  // constant downward accelartion
@@ -42,9 +44,10 @@ public class GameController{
     private Timeline colission;
     private Timeline points_timeline;
 
+    public Label name;
     private Scene scene;
-    public Text point_field;
     public ImageView bird;
+    public Label point_field;
 
     @FXML
     public javafx.scene.layout.AnchorPane AnchorPane;
@@ -54,7 +57,8 @@ public class GameController{
     @FXML
     private ResourceBundle resources;
 
-    public GameController() {
+    public GameController(PlayerModel playerModel) {
+        this.playerModel = playerModel;
     }
 
     private void initiliaze_pipes(){
@@ -72,7 +76,6 @@ public class GameController{
         bird.setX(30);
 
 
-
         for(int i = 0; i < 3; i++) {
             ArrayList<ImageView> pipes_pair = new ArrayList<>();
             ImageView pipe = new ImageView(new Image("sample/assets/pipe-green.png"));
@@ -83,6 +86,9 @@ public class GameController{
             pipe.setFitHeight(500);
             pipe1.setFitHeight(500);
 
+            pipe.toBack();
+            pipe1.toBack();
+
             // pair[0] - dolna
             pipes_pair.add(pipe);
             pipes_pair.add(pipe1);
@@ -92,6 +98,8 @@ public class GameController{
         }
         initiliaze_pipes();
 
+        point_field.setViewOrder(-100);
+        point_field.toFront();
     }
 
     @FXML
@@ -107,6 +115,7 @@ public class GameController{
                     if(pair.get(0).getX() < -50){
                         shuffle_pipes(pair);
                         pair.forEach(pipe -> pipe.setX(550));
+                        points++;
                     }
                 });
             }
@@ -126,8 +135,6 @@ public class GameController{
                     dY += gravity;
 
                 bird.setY(bird.getY()+dY);
-
-
             }
         }));
         this.jumping.setCycleCount(Timeline.INDEFINITE);
@@ -156,12 +163,14 @@ public class GameController{
     }
 
     private void pointsCheck(){
-        this.points_timeline = new Timeline(new KeyFrame(Duration.seconds(0.1), new EventHandler<ActionEvent>() {
+        this.points_timeline = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                point_field.setText("0");
+                point_field.setText(String.valueOf(points));
             }
         }));
+        this.points_timeline.setCycleCount(Timeline.INDEFINITE);
+        this.points_timeline.play();
     }
 
     @FXML
@@ -186,4 +195,5 @@ public class GameController{
         pipes.get(0).setY(640-h);
         pipes.get(1).setY(640-500-h-gap);
     }
+
 }
