@@ -1,5 +1,8 @@
 package sample.controllers;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -7,19 +10,21 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import sample.models.PlayerModel;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public class HomeController {
     private final PlayerModel playerModel;
+    private ObservableMap<String, Integer> scores;
+    private DatabaseController databaseController = new DatabaseController();
 
     public javafx.scene.layout.AnchorPane AnchorPane;
     @FXML
@@ -36,6 +41,9 @@ public class HomeController {
     private Label error;
     @FXML
     private Pane name_menu;
+    private TableView grid_score;
+    private TableColumn name_column;
+    private TableColumn point_column;
 
     @FXML
     private URL location;
@@ -49,7 +57,13 @@ public class HomeController {
 
     @FXML
     private void initialize(){
-        error.setText("Chuje!");
+        this.name.setText(this.playerModel.getPlayer_name());
+
+        new Thread(){
+            public void run(){
+                scores = databaseController.getScores();
+            }
+        }.start();
     }
 
     @FXML
@@ -61,6 +75,7 @@ public class HomeController {
             error.setText("Name too long!");
         else {
             name.setText(input.getText());
+            this.playerModel.setPlayer_name(input.getText());
             error.setText("");
         }
     }
@@ -75,6 +90,10 @@ public class HomeController {
     private void showHighscore(){
         highscore.setVisible(true);
         main_menu.setVisible(false);
+        System.out.println(scores);
+
+        grid_score.setItems((ObservableList) scores);
+
     }
 
     @FXML
@@ -86,14 +105,12 @@ public class HomeController {
 
     @FXML
     private void play(Event event) throws IOException {
+        /**
+         * Handler for Play button - switches fxml and controllers, passes playerModel to another controller.
+         * */
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../scenes/game.fxml"));
-//        AnchorPane.getChildren().setAll(
-//                Collections.singleton(
-//                        loader.load()
-//                ));
 
-        GameController controller = loader.getController();
-        controller.setPlayer(name.getText());
+        loader.setController(new GameController(this.playerModel));
 
         Parent root = (Parent)loader.load();
         Scene scene = new Scene(root, 360, 640);

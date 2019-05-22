@@ -11,3 +11,7 @@
     -fx-font-family: "Flappy Bird Regular";
     -fx-font-size: 100px;
 }
+
+.lost{
+    -fx-font-family: "Flappy Bird Regular";
+}

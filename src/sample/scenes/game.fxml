@@ -1,25 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.net.URL?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.text.Font?>
-<?import java.net.URL?>
-<AnchorPane fx:id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#keyPressed" prefHeight="639.9999000000025" prefWidth="359.9998779296875" style="-fx-background-image: url('file:/home/kamil/Pulpit/bg.png')&#10;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="sample.controllers.GameController">
-  <stylesheets>
-    <URL value="@../styles.css" />
-  </stylesheets>
-  <Label layoutX="211.0" layoutY="22.0" text="Player:"/>
-  <Label fx:id="name" layoutX="277.0" layoutY="22.0" prefWidth="100.0" text="Anonymous"/>
+
+<AnchorPane fx:id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#keyPressed" prefHeight="639.9999000000025" prefWidth="359.9998779296875" style="-fx-background-image: url('file:/home/kamil/Pulpit/bg.png')&#10;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+  <Label layoutX="211.0" layoutY="22.0" text="Player:" />
+  <Label fx:id="name" layoutX="277.0" layoutY="22.0" prefWidth="100.0" text="Anonymous" />
   <ImageView id="yellowbird-downflap.png" fx:id="bird">
     <image>
       <Image url="@../assets/yellowbird-downflap.png" />
     </image>
   </ImageView>
-  <Label fx:id="point_field" styleClass="points" alignment="CENTER" layoutX="134.0" layoutY="75.0" prefHeight="42.0" prefWidth="92.0" text="0">
+  <Label fx:id="point_field" alignment="CENTER" layoutX="134.0" layoutY="75.0" prefHeight="42.0" prefWidth="92.0" styleClass="points" text="0">
     <font>
       <Font size="32.0" />
     </font>
   </Label>
+  <Label fx:id="lost" alignment="CENTER" layoutX="14.0" layoutY="252.0" prefHeight="207.0" prefWidth="332.0" styleClass="lost" text="YOU LOST!!!&#10;PRESS SPACE TO&#10;PLAY AGAIN" visible="false">
+    <font>
+      <Font size="64.0" />
+    </font>
+  </Label>
+  <stylesheets>
+    <URL value="@../styles.css" />
+  </stylesheets>
 </AnchorPane>

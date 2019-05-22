@@ -5,15 +5,16 @@ import javafx.beans.property.StringProperty;
 
 public class PlayerModel {
 
-    private final StringProperty player_name = new SimpleStringProperty();
-    private int points = 0;
+    private final StringProperty player_name = new SimpleStringProperty("Anonymous");
+    private int points;
+
 
     public int getPoints() {
         return points;
     }
-
     public void setPoints(int points) {
         this.points = points;
+
     }
 
     public String getPlayer_name() {

@@ -5,15 +5,20 @@ import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import sample.models.PlayerModel;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Random;
@@ -27,8 +32,6 @@ public class GameController{
      * y += dY
      * */
     private final PlayerModel playerModel;
-
-
     private int points = 0;
     private boolean run = false;
     private final double gravity = 1;  // constant downward accelartion
@@ -37,6 +40,7 @@ public class GameController{
     private int dY = 0; // verticale speed
     private double pipes_distance = 200;
     private ArrayList<ArrayList<ImageView>> pipes = new ArrayList<ArrayList<ImageView>>();
+    private DatabaseController databaseController = new DatabaseController();
 
     /**Background tasks, pipes movement, bird position updating, collision check*/
     private Timeline rewind;
@@ -48,6 +52,7 @@ public class GameController{
     private Scene scene;
     public ImageView bird;
     public Label point_field;
+    public Label lost;
 
     @FXML
     public javafx.scene.layout.AnchorPane AnchorPane;
@@ -86,9 +91,6 @@ public class GameController{
             pipe.setFitHeight(500);
             pipe1.setFitHeight(500);
 
-            pipe.toBack();
-            pipe1.toBack();
-
             // pair[0] - dolna
             pipes_pair.add(pipe);
             pipes_pair.add(pipe1);
@@ -99,92 +101,168 @@ public class GameController{
         initiliaze_pipes();
 
         point_field.setViewOrder(-100);
-        point_field.toFront();
+
+        // z-order and set label's value
+        name.setText(playerModel.getPlayer_name());
+        name.setViewOrder(-100);
+
+        lost.setViewOrder(-100);
+
     }
 
     @FXML
     private void startGame(){
-        // timeline rewinding pipes
-        this.rewind = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                pipes.forEach(pair -> {
-                    // move pipes
-                    pair.forEach(pipe -> pipe.setX(pipe.getX()-1));
+        /** Rewind time line - moves pipes and loops it over,
+         *  Array of 3 pipes which are reseted over whenever
+         *  One reaches X = -50
+         *
+         *  Firstly, check if rewind was started, it would mean that player died and there's
+         *  no point of creating timeline once again, just start it over.
+         *  If timeline wasn't create - create one and start it.
+         * */
+        if(this.rewind == null){
+            this.rewind = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    pipes.forEach(pair -> {
+                        // move pipes
+                        pair.forEach(pipe -> pipe.setX(pipe.getX()-1));
 
-                    if(pair.get(0).getX() < -50){
-                        shuffle_pipes(pair);
-                        pair.forEach(pipe -> pipe.setX(550));
-                        points++;
-                    }
-                });
-            }
-        }));
-        this.rewind.setCycleCount(Timeline.INDEFINITE);
-        this.rewind.play();
-
-        // jumping
-        this.jumping = new Timeline(new KeyFrame(Duration.seconds(0.05), new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                if(isFlapping){
-                    dY += gravity + flapping;
-                    isFlapping = false;
+                        if(pair.get(0).getX() < -50){
+                            shuffle_pipes(pair);
+                            pair.forEach(pipe -> pipe.setX(550));
+                            points++;
+                        }
+                    });
                 }
-                else
-                    dY += gravity;
+            }));
+            this.rewind.setCycleCount(Timeline.INDEFINITE);
+            this.rewind.play();
+        }
+        else
+            this.rewind.play();
 
-                bird.setY(bird.getY()+dY);
-            }
-        }));
-        this.jumping.setCycleCount(Timeline.INDEFINITE);
-        this.jumping.play();
+        /*Jumping timeline - responsible for gravity force and flapping upward */
+        if(this.jumping == null) {
+            this.jumping = new Timeline(new KeyFrame(Duration.seconds(0.05), new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    if (isFlapping) {
+                        dY += gravity + flapping;
+                        isFlapping = false;
+                    } else
+                        dY += gravity;
+
+                    bird.setY(bird.getY() + dY);
+                }
+            }));
+            this.jumping.setCycleCount(Timeline.INDEFINITE);
+            this.jumping.play();
+        }
+        else
+            this.jumping.play();
     }
 
     private void collisionCheck(){
-        this.colission = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                if(bird.getY() <= 0 || bird.getY() >= 640) {
-                    bird.setY(320);
-                    rewind.stop();
+        /*Collisiong timeline - checks if player touched any of pipes*/
+        if(this.colission == null) {
+            this.colission = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    if (bird.getY() <= 0 || bird.getY() >= 640) {
+                        if(run) {
+                            rewind.stop();
+                            jumping.stop();
+                            points_timeline.stop();
+                            lost.setVisible(true);
+                            run = false;
+
+                            new Thread() {
+                                public void run() {
+                                    databaseController.insert(playerModel.getPlayer_name(), points);
+                                }
+                            }.start();
+                        }
+                    }
+
+                    pipes.forEach(pair -> pair.forEach(pipe -> {
+                        if (pipe.getBoundsInParent().intersects(bird.getBoundsInParent())) {
+                            if(run) {
+                                rewind.stop();
+                                jumping.stop();
+                                points_timeline.stop();
+                                lost.setVisible(true);
+                                run = false;
+
+                                new Thread() {
+                                    public void run() {
+                                        databaseController.insert(playerModel.getPlayer_name(), points);
+                                    }
+                                }.start();
+                            }
+                        }
+                    }));
+
                 }
-
-                pipes.forEach(pair -> pair.forEach(pipe -> {
-                     if(pipe.getBoundsInParent().intersects(bird.getBoundsInParent())) {
-                         initiliaze_pipes();
-                     }
-                }));
-
-            }
-        }));
-        this.colission.setCycleCount(Timeline.INDEFINITE);
-        this.colission.play();
+            }));
+            this.colission.setCycleCount(Timeline.INDEFINITE);
+            this.colission.play();
+        }
+        else
+            this.colission.play();
     }
 
     private void pointsCheck(){
-        this.points_timeline = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                point_field.setText(String.valueOf(points));
-            }
-        }));
-        this.points_timeline.setCycleCount(Timeline.INDEFINITE);
-        this.points_timeline.play();
+        if(this.points_timeline == null) {
+            this.points_timeline = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    point_field.setText(String.valueOf(points));
+                }
+            }));
+            this.points_timeline.setCycleCount(Timeline.INDEFINITE);
+            this.points_timeline.play();
+        }
+        else
+            this.points_timeline.play();
     }
 
     @FXML
-    private void keyPressed(KeyEvent event){
+    private void keyPressed(KeyEvent event) throws IOException {
         if(event.getCode() == KeyCode.SPACE){
+            // start / restart
             if(!this.run){
-                startGame();
-                collisionCheck();
-                pointsCheck();
+                restart();
                 run = true;
             }
             else
                 isFlapping = true;
         }
+        else if(event.getCode() == KeyCode.ESCAPE){
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("../scenes/home.fxml"));
+
+            loader.setController(new HomeController(this.playerModel));
+
+            Parent root = (Parent)loader.load();
+            Scene scene = new Scene(root, 360, 640);
+
+            scene.getRoot().requestFocus();
+            scene.getStylesheets().add("sample/styles.css");
+            Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+
+            stage.setScene(scene);
+        }
+    }
+
+    private void restart(){
+        initiliaze_pipes();
+        bird.setY(320);
+        dY = 0;
+        startGame();
+        collisionCheck();
+        pointsCheck();
+        lost.setVisible(false);
+        points = 0;
     }
 
     private void shuffle_pipes(ArrayList<ImageView> pipes){
