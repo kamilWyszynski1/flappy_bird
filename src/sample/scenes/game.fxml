@@ -1,25 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import java.lang.*?>
+<?import java.net.*?>
 <?import java.net.URL?>
-<AnchorPane onKeyPressed="#keyPressed" fx:id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="639.9999000000025" prefWidth="359.9998779296875" style="-fx-background-image: url('file:/home/kamil/Pulpit/bg.png')&#10;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="sample.controllers.GameController">
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane fx:id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#keyPressed" prefHeight="639.9999000000025" prefWidth="359.9998779296875" style="-fx-background-image: url('file:/home/kamil/Pulpit/bg.png')&#10;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="sample.controllers.GameController">
   <children>
-    <ImageView fx:id="bird" id="yellowbird-downflap.png">
+    <ImageView id="yellowbird-downflap.png" fx:id="bird">
       <image>
-        <Image  url="@../assets/yellowbird-downflap.png" preserveRatio="true" smooth="true" />
+        <Image url="@../assets/yellowbird-downflap.png"/>
       </image>
     </ImageView>
-    <ImageView fx:id="down_pipe" id="pipe-green.png" layoutX="279.0" layoutY="335.0">
-      <image>
-        <Image url="@../assets/pipe-green.png" preserveRatio="true" smooth="true" />
-      </image>
-    </ImageView>
-    <ImageView fx:id="upper_pipe" id="pipe-green.png" layoutX="279.0" layoutY="-127.0" rotate="180.0">
-      <image>
-        <Image url="@../assets/pipe-green.png" preserveRatio="true" smooth="true" />
-      </image>
-    </ImageView>
+    <Text fx:id="point_field" layoutX="166.0" layoutY="95.0" scaleX="3.6453651823066093" scaleY="2.8415051112016543" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
   </children>
   <stylesheets>
     <URL value="@../styles.css" />
