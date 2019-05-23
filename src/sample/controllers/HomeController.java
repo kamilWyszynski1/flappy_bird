@@ -1,8 +1,6 @@
 package sample.controllers;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,10 +9,11 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import sample.models.PlayerModel;
+import sample.models.ScoreModel;
 
 import java.io.IOException;
 import java.net.URL;
@@ -23,7 +22,7 @@ import java.util.ResourceBundle;
 
 public class HomeController {
     private final PlayerModel playerModel;
-    private ObservableMap<String, Integer> scores;
+    private HashMap<String, Integer> scores;
     private DatabaseController databaseController = new DatabaseController();
 
     public javafx.scene.layout.AnchorPane AnchorPane;
@@ -41,9 +40,9 @@ public class HomeController {
     private Label error;
     @FXML
     private Pane name_menu;
-    private TableView grid_score;
-    private TableColumn name_column;
-    private TableColumn point_column;
+    public TableView scoreTable;
+    public TableColumn<ScoreModel, String> colName;
+    public TableColumn<ScoreModel, Integer> colPoints;
 
     @FXML
     private URL location;
@@ -59,9 +58,15 @@ public class HomeController {
     private void initialize(){
         this.name.setText(this.playerModel.getPlayer_name());
 
+        colName.setCellValueFactory(new PropertyValueFactory<ScoreModel, String>("name"));
+        colName.setResizable(false);
+        colPoints.setCellValueFactory(new PropertyValueFactory<ScoreModel, Integer>("points"));
+        colPoints.setResizable(false);
+
         new Thread(){
             public void run(){
-                scores = databaseController.getScores();
+                ObservableList<ScoreModel> list = databaseController.getScores();
+                scoreTable.setItems(list);
             }
         }.start();
     }
@@ -90,9 +95,7 @@ public class HomeController {
     private void showHighscore(){
         highscore.setVisible(true);
         main_menu.setVisible(false);
-        System.out.println(scores);
 
-        grid_score.setItems((ObservableList) scores);
 
     }
 

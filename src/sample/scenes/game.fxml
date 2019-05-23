@@ -13,7 +13,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#keyPressed" prefHeight="639.9999000000025" prefWidth="359.9998779296875" style="-fx-background-image: url('file:/home/kamil/Pulpit/bg.png')&#10;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+<AnchorPane fx:id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#keyPressed" prefHeight="639.9999000000025" prefWidth="359.9998779296875" styleClass="window" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
   <Label layoutX="211.0" layoutY="22.0" text="Player:" />
   <Label fx:id="name" layoutX="277.0" layoutY="22.0" prefWidth="100.0" text="Anonymous" />
   <ImageView id="yellowbird-downflap.png" fx:id="bird">

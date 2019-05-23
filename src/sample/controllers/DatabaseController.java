@@ -1,10 +1,10 @@
 package sample.controllers;
 
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableMap;
+import javafx.collections.ObservableList;
+import sample.models.ScoreModel;
 
 import java.sql.*;
-import java.util.HashMap;
 
 public class DatabaseController {
     /**
@@ -39,9 +39,9 @@ public class DatabaseController {
         }
     }
 
-    public ObservableMap<String, Integer> getScores(){
-        String sql = "SELECT name, points FROM scores ORDER BY points LIMIT 6";
-        ObservableMap<String, Integer> scores = FXCollections.observableHashMap();
+    public ObservableList<ScoreModel> getScores(){
+        String sql = "SELECT name, points FROM scores ORDER BY points desc LIMIT 6";
+        ObservableList<ScoreModel> list = FXCollections.observableArrayList();
 
         try (Connection conn = this.connect();
              Statement stmt  = conn.createStatement();
@@ -49,13 +49,12 @@ public class DatabaseController {
 
             // loop through the result set
             while (rs.next()) {
-                scores.put(rs.getString("name"), rs.getInt("points"));
+                list.add(new ScoreModel(rs.getString("name"), rs.getInt("points")));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-
-        return scores;
+        return list;
     }
 }
 

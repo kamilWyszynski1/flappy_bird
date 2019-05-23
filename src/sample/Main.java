@@ -5,11 +5,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import sample.controllers.DatabaseController;
 import sample.controllers.HomeController;
 import sample.models.PlayerModel;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class Main extends Application  {
 
@@ -30,22 +32,25 @@ public class Main extends Application  {
         }
     }
 
+
+
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception {
         PlayerModel playerModel = new PlayerModel();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("scenes/home.fxml"));
         loader.setController(new HomeController(playerModel));
 
-        Parent root = (Parent)loader.load();
+        Parent root = (Parent) loader.load();
         primaryStage.setTitle("Hello World");
         Scene scene = new Scene(root, 360, 640);
         scene.getRoot().requestFocus();
+
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.show();
 
         initialize();
     }
-
 
     public static void main(String[] args) {
         launch(args);

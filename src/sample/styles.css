@@ -15,3 +15,7 @@
 .lost{
     -fx-font-family: "Flappy Bird Regular";
 }
+
+.window{
+    -fx-background-image: url('../sample/assets/bg.png');
+}
