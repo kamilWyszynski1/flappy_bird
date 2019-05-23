@@ -6,12 +6,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import sample.controllers.HomeController;
+import sample.models.NeuralNetwork;
 import sample.models.PlayerModel;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Vector;
 
 public class Main extends Application  {
 
@@ -50,6 +52,12 @@ public class Main extends Application  {
         primaryStage.show();
 
         initialize();
+
+        NeuralNetwork neuralNetwork = new NeuralNetwork(2,6);
+        Vector<Double> inputs = new Vector<>();
+        inputs.add(2.0);
+        inputs.add(4.0);
+        System.out.println(neuralNetwork.predict(inputs));
     }
 
     public static void main(String[] args) {

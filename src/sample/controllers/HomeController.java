@@ -25,7 +25,8 @@ public class HomeController {
     private HashMap<String, Integer> scores;
     private DatabaseController databaseController = new DatabaseController();
 
-    public javafx.scene.layout.AnchorPane AnchorPane;
+    @FXML
+    private javafx.scene.layout.AnchorPane AnchorPane;
     @FXML
     private TextField input;
     @FXML
@@ -33,16 +34,19 @@ public class HomeController {
     @FXML
     private Label name;
     @FXML
-    private Group main_menu;
+    private Pane main_menu;
     @FXML
     private Pane highscore;
     @FXML
     private Label error;
     @FXML
     private Pane name_menu;
-    public TableView scoreTable;
-    public TableColumn<ScoreModel, String> colName;
-    public TableColumn<ScoreModel, Integer> colPoints;
+    @FXML
+    private TableView scoreTable;
+    @FXML
+    private TableColumn<ScoreModel, String> colName;
+    @FXML
+    private TableColumn<ScoreModel, Integer> colPoints;
 
     @FXML
     private URL location;
@@ -63,12 +67,10 @@ public class HomeController {
         colPoints.setCellValueFactory(new PropertyValueFactory<ScoreModel, Integer>("points"));
         colPoints.setResizable(false);
 
-        new Thread(){
-            public void run(){
-                ObservableList<ScoreModel> list = databaseController.getScores();
-                scoreTable.setItems(list);
-            }
-        }.start();
+        new Thread(() -> {
+            ObservableList<ScoreModel> list = databaseController.getScores();
+            scoreTable.setItems(list);
+        }).start();
     }
 
     @FXML

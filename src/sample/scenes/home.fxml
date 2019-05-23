@@ -11,6 +11,9 @@
 <?import javafx.scene.text.Font?>
 
 <AnchorPane fx:id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="639.9999000000025" prefWidth="359.9998779296875" styleClass="window" visible="true" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+  <stylesheets>
+    <URL value="@../styles.css" />
+  </stylesheets>
   <Label layoutX="211.0" layoutY="22.0" text="Player:" />
   <Label fx:id="name" layoutX="277.0" layoutY="22.0" prefWidth="100.0" />
   <Label alignment="CENTER" layoutX="49.0" layoutY="44.0" prefHeight="243.0" prefWidth="262.0" styleClass="title" text="FLAPPY BIRD GAME!" textAlignment="CENTER" wrapText="true">
@@ -18,11 +21,7 @@
       <Font name="System Bold" size="20.0" fx:id="x1" />
     </font>
   </Label>
-  <Group fx:id="main_menu" visible="true">
-    <Button layoutX="106.0" layoutY="327.0" mnemonicParsing="false" onAction="#play" prefHeight="53.0" prefWidth="147.0" text="Play" />
-    <Button layoutX="106.0" layoutY="390.0" mnemonicParsing="false" onAction="#showPlayerName" prefHeight="53.0" prefWidth="147.0" text="Set player name" textAlignment="CENTER" />
-    <Button layoutX="106.0" layoutY="453.0" mnemonicParsing="false" onAction="#showHighscore" prefHeight="53.0" prefWidth="147.0" text="Highscore" />
-  </Group>
+
   <Pane fx:id="name_menu" prefHeight="582.0" visible="false">
     <Button layoutX="23.0" layoutY="19.0" mnemonicParsing="false" onAction="#back" text="Back" />
     <TextField fx:id="input" layoutX="69.0" layoutY="405.0" prefWidth="200.0" />
@@ -44,7 +43,12 @@
       </columns>
     </TableView>
   </Pane>
-  <stylesheets>
-    <URL value="@../styles.css" />
-  </stylesheets>
+  <Pane fx:id="main_menu" layoutX="77.0" layoutY="222.0" prefHeight="388.0" prefWidth="200.0">
+    <children>
+      <Button layoutX="27.0" layoutY="114.0" mnemonicParsing="false" onAction="#play" prefHeight="53.0" prefWidth="147.0" text="Play" />
+      <Button layoutX="27.0" layoutY="309.0" mnemonicParsing="false" onAction="#showHighscore" prefHeight="53.0" prefWidth="147.0" text="Self Learning" />
+      <Button layoutX="27.0" layoutY="177.0" mnemonicParsing="false" onAction="#showPlayerName" prefHeight="53.0" prefWidth="147.0" text="Set player name" textAlignment="CENTER" />
+      <Button layoutX="27.0" layoutY="240.0" mnemonicParsing="false" onAction="#showHighscore" prefHeight="53.0" prefWidth="147.0" text="Highscore" />
+    </children>
+  </Pane>
 </AnchorPane>
