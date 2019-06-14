@@ -15,6 +15,9 @@ import java.sql.Statement;
 
 public class Main extends Application  {
 
+    /**Creates database if it doesnt exist and creates table
+     * for highscores.
+     * */
     private void initialize() {
         String url = "jdbc:sqlite:highscore.sqlite";
         String sql = "CREATE TABLE IF NOT EXISTS scores (\n"

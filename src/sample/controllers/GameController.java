@@ -24,29 +24,34 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.ResourceBundle;
 
+
+/**
+ * Handles all bird actions, detection etc.
+ * Contains variables responsible for game and bird movement.
+ *      Bird gravity equation, smooth jumping:
+ *      dY += gravity + flapping
+ *      y += dY
+ *
+ * Additionally creates background tasks for these operations.
+ * */
 public class GameController{
-    /**
-     * Variables responsible for game and bird movement.
-     * Bird gravity equation, smooth jumping:
-     * dY += gravity + flapping
-     * y += dY
-     * */
     private final PlayerModel playerModel;
     private int points = 0;
     private boolean run = false;
-    private final double gravity = 1;  // constant downward accelartion
-    private final double flapping = -10;  // uppward acceleration
+    private final double gravity = 0.1;  // constant downward accelartion
+    private final double flapping = -4;  // uppward acceleration
     private boolean isFlapping = false;
-    private int dY = 0; // verticale speed
+    private double dY = 0; // verticale speed
     private double pipes_distance = 200;
     private ArrayList<ArrayList<ImageView>> pipes = new ArrayList<ArrayList<ImageView>>();
     private DatabaseController databaseController = new DatabaseController();
+    private Image[] birdImages;
 
-    /**Background tasks, pipes movement, bird position updating, collision check*/
     private Timeline rewind;
     private Timeline jumping;
     private Timeline colission;
-    private Timeline points_timeline;
+    private Timeline pointsTimeline;
+    private Timeline birdChange;
 
     public Label name;
     private Scene scene;
@@ -64,6 +69,12 @@ public class GameController{
 
     public GameController(PlayerModel playerModel) {
         this.playerModel = playerModel;
+        birdImages = new Image[3];
+
+        birdImages[0] = new Image("sample/assets/yellowbird-downflap.png");
+        birdImages[1] = new Image("sample/assets/yellowbird-midflap.png");
+        birdImages[2] = new Image("sample/assets/yellowbird-upflap.png");
+
     }
 
     private void initiliaze_pipes(){
@@ -74,6 +85,7 @@ public class GameController{
         }
     }
 
+    /**Initialization of bird position, pipes' and bird's images. */
     @FXML
     private void initialize() {
         int bird_y = 300;
@@ -94,7 +106,7 @@ public class GameController{
             // pair[0] - dolna
             pipes_pair.add(pipe);
             pipes_pair.add(pipe1);
-            this.pipes.add(pipes_pair);
+            pipes.add(pipes_pair);
             shuffle_pipes(pipes_pair);
             AnchorPane.getChildren().addAll(pipes_pair);
         }
@@ -110,18 +122,15 @@ public class GameController{
 
     }
 
+    /**Creates rewind timeline - moves pipes and loops them over,
+     * array of 3 pipes which are reseted over whenever one reaches x=-50
+     *
+     * Additionally creates jumping timeline which handles gravitaion
+     * and bird's acceleration.*/
     @FXML
     private void startGame(){
-        /** Rewind time line - moves pipes and loops it over,
-         *  Array of 3 pipes which are reseted over whenever
-         *  One reaches X = -50
-         *
-         *  Firstly, check if rewind was started, it would mean that player died and there's
-         *  no point of creating timeline once again, just start it over.
-         *  If timeline wasn't create - create one and start it.
-         * */
-        if(this.rewind == null){
-            this.rewind = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
+        if(rewind == null){
+            rewind = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     pipes.forEach(pair -> {
@@ -136,15 +145,15 @@ public class GameController{
                     });
                 }
             }));
-            this.rewind.setCycleCount(Timeline.INDEFINITE);
-            this.rewind.play();
+            rewind.setCycleCount(Timeline.INDEFINITE);
+            rewind.play();
         }
         else
-            this.rewind.play();
+            rewind.play();
 
         /*Jumping timeline - responsible for gravity force and flapping upward */
-        if(this.jumping == null) {
-            this.jumping = new Timeline(new KeyFrame(Duration.seconds(0.05), new EventHandler<ActionEvent>() {
+        if(jumping == null) {
+            jumping = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     if (isFlapping) {
@@ -156,24 +165,26 @@ public class GameController{
                     bird.setY(bird.getY() + dY);
                 }
             }));
-            this.jumping.setCycleCount(Timeline.INDEFINITE);
-            this.jumping.play();
+            jumping.setCycleCount(Timeline.INDEFINITE);
+            jumping.play();
         }
         else
-            this.jumping.play();
+            jumping.play();
     }
 
+    /**Collision timeline - checks if player touched any of pipes, if he did
+     * timeline stops rest of timelines which is basically stopping whole game and
+     * creates net Thread to insert user's score to db.*/
     private void collisionCheck(){
-        /*Collisiong timeline - checks if player touched any of pipes*/
-        if(this.colission == null) {
-            this.colission = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
+        if(colission == null) {
+            colission = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     if (bird.getY() <= 0 || bird.getY() >= 640) {
                         if(run) {
                             rewind.stop();
                             jumping.stop();
-                            points_timeline.stop();
+                            pointsTimeline.stop();
                             lost.setVisible(true);
                             run = false;
 
@@ -190,7 +201,8 @@ public class GameController{
                             if(run) {
                                 rewind.stop();
                                 jumping.stop();
-                                points_timeline.stop();
+                                pointsTimeline.stop();
+                                birdChange.stop();
                                 lost.setVisible(true);
                                 run = false;
 
@@ -205,33 +217,56 @@ public class GameController{
 
                 }
             }));
-            this.colission.setCycleCount(Timeline.INDEFINITE);
-            this.colission.play();
+            colission.setCycleCount(Timeline.INDEFINITE);
+            colission.play();
         }
         else
-            this.colission.play();
+            colission.play();
     }
 
+    /**Timeline to increment user's points - whenever pipe is reseted point is added.*/
     private void pointsCheck(){
-        if(this.points_timeline == null) {
-            this.points_timeline = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
+        if(pointsTimeline == null) {
+            pointsTimeline = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     point_field.setText(String.valueOf(points));
                 }
             }));
-            this.points_timeline.setCycleCount(Timeline.INDEFINITE);
-            this.points_timeline.play();
+            pointsTimeline.setCycleCount(Timeline.INDEFINITE);
+            pointsTimeline.play();
         }
         else
-            this.points_timeline.play();
+            pointsTimeline.play();
     }
 
+    /**Timeline handles bird's image change.*/
+    private void changeBird(){
+        if (birdChange == null) {
+            birdChange = new Timeline(new KeyFrame(Duration.seconds(0.1), new EventHandler<ActionEvent>() {
+                int i = 0;
+
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    bird.setImage(birdImages[i]);
+
+                    i = (i + 1) % birdImages.length;
+                }
+            }));
+            birdChange.setCycleCount(Timeline.INDEFINITE);
+            birdChange.play();
+        }
+        else
+            birdChange.play();
+        
+    }
+    
+    
     @FXML
     private void keyPressed(KeyEvent event) throws IOException {
         if(event.getCode() == KeyCode.SPACE){
             // start / restart
-            if(!this.run){
+            if(!run){
                 restart();
                 run = true;
             }
@@ -241,7 +276,7 @@ public class GameController{
         else if(event.getCode() == KeyCode.ESCAPE){
             FXMLLoader loader = new FXMLLoader(getClass().getResource("../scenes/home.fxml"));
 
-            loader.setController(new HomeController(this.playerModel));
+            loader.setController(new HomeController(playerModel));
 
             Parent root = (Parent)loader.load();
             Scene scene = new Scene(root, 360, 640);
@@ -254,6 +289,14 @@ public class GameController{
         }
     }
 
+    /** Responsible for starting/restarting game
+     * Creates all the timelines responsible for:
+     *      Collision Detection
+     *      Bird movement
+     *      Pipes movement
+     *      Points incrementing
+     *      Bird image change
+     * */
     private void restart(){
         initiliaze_pipes();
         bird.setY(320);
@@ -261,6 +304,7 @@ public class GameController{
         startGame();
         collisionCheck();
         pointsCheck();
+        changeBird();
         lost.setVisible(false);
         points = 0;
     }

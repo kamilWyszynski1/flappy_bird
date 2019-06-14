@@ -41,7 +41,6 @@
   <Pane fx:id="main_menu" layoutX="77.0" layoutY="222.0" prefHeight="388.0" prefWidth="200.0">
     <children>
       <Button layoutX="27.0" layoutY="114.0" mnemonicParsing="false" onAction="#play" prefHeight="53.0" prefWidth="147.0" text="Play" />
-      <Button layoutX="27.0" layoutY="309.0" mnemonicParsing="false" onAction="#showHighscore" prefHeight="53.0" prefWidth="147.0" text="Self Learning" />
       <Button layoutX="27.0" layoutY="177.0" mnemonicParsing="false" onAction="#showPlayerName" prefHeight="53.0" prefWidth="147.0" text="Set player name" textAlignment="CENTER" />
       <Button layoutX="27.0" layoutY="240.0" mnemonicParsing="false" onAction="#showHighscore" prefHeight="53.0" prefWidth="147.0" text="Highscore" />
     </children>

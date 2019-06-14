@@ -20,6 +20,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.ResourceBundle;
 
+/**Handles main menu*/
 public class HomeController {
     private final PlayerModel playerModel;
     private HashMap<String, Integer> scores;
@@ -108,11 +109,9 @@ public class HomeController {
         highscore.setVisible(false);
     }
 
+    /**Handles play button - switches fxml and controllers, passes playerModel to GameController.*/
     @FXML
     private void play(Event event) throws IOException {
-        /**
-         * Handler for Play button - switches fxml and controllers, passes playerModel to another controller.
-         * */
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../scenes/game.fxml"));
 
         loader.setController(new GameController(this.playerModel));
