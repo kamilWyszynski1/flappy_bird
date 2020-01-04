@@ -3,7 +3,7 @@ package sample.models;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
-/**Contains player's points and name.
+/**Contains TimelinesObservator's points and name.
  * Passed between two controllers while scene is changed.*/
 public class PlayerModel {
 

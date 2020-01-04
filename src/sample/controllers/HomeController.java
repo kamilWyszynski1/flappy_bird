@@ -4,7 +4,6 @@ import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -98,8 +97,6 @@ public class HomeController {
     private void showHighscore(){
         highscore.setVisible(true);
         main_menu.setVisible(false);
-
-
     }
 
     @FXML

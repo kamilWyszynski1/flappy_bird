@@ -19,6 +19,8 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import sample.models.PlayerModel;
+import sample.models.TimelineObserver;
+import sample.models.TimelinesObservator;
 
 import java.io.IOException;
 import java.net.URL;
@@ -53,10 +55,11 @@ public class GameController{
 
     private Timeline rewind;
     private Timeline jumping;
-    private Timeline colission;
+    private Timeline collision;
     private Timeline pointsTimeline;
-    private Timeline streakTimeline;
     private Timeline birdChange;
+
+    private TimelinesObservator observator = new TimelinesObservator();
 
     public Label name;
     private Scene scene;
@@ -84,6 +87,11 @@ public class GameController{
             streak = 300;
         }
 
+//        observator.attach(new TimelineObserver(observator, rewind));
+//        observator.attach(new TimelineObserver(observator, jumping));
+//        observator.attach(new TimelineObserver(observator, collision));
+//        observator.attach(new TimelineObserver(observator, pointsTimeline));
+//        observator.attach(new TimelineObserver(observator, birdChange));
 
     }
 
@@ -146,15 +154,15 @@ public class GameController{
      * and bird's acceleration.*/
     @FXML
     private void startGame(){
-        if(rewind == null){
+        if(rewind == null) {
             rewind = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     pipes.forEach(pair -> {
                         // move pipes
-                        pair.forEach(pipe -> pipe.setX(pipe.getX()-1));
+                        pair.forEach(pipe -> pipe.setX(pipe.getX() - 1));
 
-                        if(pair.get(0).getX() < -50){
+                        if (pair.get(0).getX() < -50) {
                             shuffle_pipes(pair);
                             pair.forEach(pipe -> pipe.setX(550));
                             points++;
@@ -163,10 +171,9 @@ public class GameController{
                 }
             }));
             rewind.setCycleCount(Timeline.INDEFINITE);
-            rewind.play();
+            observator.attach(new TimelineObserver(observator, rewind));
+
         }
-        else
-            rewind.play();
 
         /*Jumping timeline - responsible for gravity force and flapping upward */
         if(jumping == null) {
@@ -183,22 +190,20 @@ public class GameController{
                 }
             }));
             jumping.setCycleCount(Timeline.INDEFINITE);
-            jumping.play();
+            observator.attach(new TimelineObserver(observator, jumping));
         }
-        else
-            jumping.play();
     }
 
-    /**Collision timeline - checks if player touched any of pipes, if he did
+    /**Collision timeline - checks if TimelinesObservator touched any of pipes, if he did
      * timeline stops rest of timelines which is basically stopping whole game and
      * creates net Thread to insert user's score to db.*/
     private void collisionCheck(){
-        if(colission == null) {
-            colission = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
+        if(collision == null) {
+            collision = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     if (bird.getY() <= 0 || bird.getY() >= 640) {
-                        if(run) {
+                        if (run) {
                             rewind.stop();
                             jumping.stop();
                             pointsTimeline.stop();
@@ -215,11 +220,8 @@ public class GameController{
 
                     pipes.forEach(pair -> pair.forEach(pipe -> {
                         if (pipe.getBoundsInParent().intersects(bird.getBoundsInParent())) {
-                            if(run) {
-                                rewind.stop();
-                                jumping.stop();
-                                pointsTimeline.stop();
-                                birdChange.stop();
+                            if (run) {
+                                observator.setRunning(false);
                                 lost.setVisible(true);
                                 run = false;
 
@@ -234,11 +236,9 @@ public class GameController{
 
                 }
             }));
-            colission.setCycleCount(Timeline.INDEFINITE);
-            colission.play();
+            collision.setCycleCount(Timeline.INDEFINITE);
+            observator.attach(new TimelineObserver(observator, collision));
         }
-        else
-            colission.play();
     }
 
     private void timelinesStop() {
@@ -246,10 +246,9 @@ public class GameController{
         jumping.stop();
         pointsTimeline.stop();
         birdChange.stop();
-        streakTimeline.stop();
     }
 
-    /**Timeline to increment user's points - whenever pipe is reseted point is added.*/
+    /**TimelineObserver to increment user's points - whenever pipe is reseted point is added.*/
     private void pointsCheck(){
         if(pointsTimeline == null) {
             pointsTimeline = new Timeline(new KeyFrame(Duration.seconds(0.01), new EventHandler<ActionEvent>() {
@@ -259,13 +258,11 @@ public class GameController{
                 }
             }));
             pointsTimeline.setCycleCount(Timeline.INDEFINITE);
-            pointsTimeline.play();
+            observator.attach(new TimelineObserver(observator, pointsTimeline));
         }
-        else
-            pointsTimeline.play();
     }
 
-    /**Timeline handles bird's image change.*/
+    /**TimelineObserver handles bird's image change.*/
     private void changeBird(){
         if (birdChange == null) {
             birdChange = new Timeline(new KeyFrame(Duration.seconds(0.1), new EventHandler<ActionEvent>() {
@@ -279,10 +276,8 @@ public class GameController{
                 }
             }));
             birdChange.setCycleCount(Timeline.INDEFINITE);
-            birdChange.play();
+            observator.attach(new TimelineObserver(observator, birdChange));
         }
-        else
-            birdChange.play();
         
     }
     
@@ -330,6 +325,7 @@ public class GameController{
         collisionCheck();
         pointsCheck();
         changeBird();
+        observator.setRunning(true);
         lost.setVisible(false);
         points = 0;
     }
