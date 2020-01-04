@@ -3,6 +3,8 @@ package sample.models;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+/**Contains player's points and name.
+ * Passed between two controllers while scene is changed.*/
 public class PlayerModel {
 
     private final StringProperty player_name = new SimpleStringProperty("Anonymous");

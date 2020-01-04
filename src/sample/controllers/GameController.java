@@ -14,6 +14,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import sample.models.PlayerModel;
@@ -46,11 +48,14 @@ public class GameController{
     private ArrayList<ArrayList<ImageView>> pipes = new ArrayList<ArrayList<ImageView>>();
     private DatabaseController databaseController = new DatabaseController();
     private Image[] birdImages;
+    private double[] streakArray = new double[10];
+    private ArrayList<Circle> circles = new ArrayList<>();
 
     private Timeline rewind;
     private Timeline jumping;
     private Timeline colission;
     private Timeline pointsTimeline;
+    private Timeline streakTimeline;
     private Timeline birdChange;
 
     public Label name;
@@ -75,6 +80,11 @@ public class GameController{
         birdImages[1] = new Image("sample/assets/yellowbird-midflap.png");
         birdImages[2] = new Image("sample/assets/yellowbird-upflap.png");
 
+        for (double streak : streakArray) {
+            streak = 300;
+        }
+
+
     }
 
     private void initiliaze_pipes(){
@@ -91,7 +101,6 @@ public class GameController{
         int bird_y = 300;
         bird.setY(bird_y);
         bird.setX(30);
-
 
         for(int i = 0; i < 3; i++) {
             ArrayList<ImageView> pipes_pair = new ArrayList<>();
@@ -120,6 +129,14 @@ public class GameController{
 
         lost.setViewOrder(-100);
 
+        Circle circle = new Circle();
+        circle.setCenterX(bird.getY());
+        circle.setCenterX(30.0);
+        circle.setRadius(1);
+        circle.setFill(Color.RED);
+        circle.setViewOrder(-100);
+
+        AnchorPane.getChildren().add(circle);
     }
 
     /**Creates rewind timeline - moves pipes and loops them over,
@@ -222,6 +239,14 @@ public class GameController{
         }
         else
             colission.play();
+    }
+
+    private void timelinesStop() {
+        rewind.stop();
+        jumping.stop();
+        pointsTimeline.stop();
+        birdChange.stop();
+        streakTimeline.stop();
     }
 
     /**Timeline to increment user's points - whenever pipe is reseted point is added.*/

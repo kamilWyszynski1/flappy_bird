@@ -1,5 +1,6 @@
 package sample.models;
 
+/**Used in main menu to show highest scores of all players*/
 public class ScoreModel {
     public String getName() {
         return name;
@@ -18,7 +19,7 @@ public class ScoreModel {
     }
 
     private String name;
-   private int points;
+    private int points;
 
     public ScoreModel(String name, int points) {
         this.name = name;
