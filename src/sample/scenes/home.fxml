@@ -5,6 +5,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 <?import java.net.URL?>
+<?import sample.models.CustomColorPicker?>
 <AnchorPane fx:id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="639.9999000000025" prefWidth="359.9998779296875" styleClass="window" visible="true" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
   <stylesheets>
     <URL value="@../styles.css" />
@@ -17,6 +18,9 @@
     </font>
   </Label>
 
+  <CustomColorPicker fx:id="colorPicker" visible="false">
+    <Button layoutX="23.0" layoutY="19.0" mnemonicParsing="false" onAction="#back" text="Back" />
+  </CustomColorPicker>
   <Pane fx:id="name_menu" prefHeight="582.0" visible="false">
     <Button layoutX="23.0" layoutY="19.0" mnemonicParsing="false" onAction="#back" text="Back" />
     <TextField fx:id="input" layoutX="69.0" layoutY="405.0" prefWidth="200.0" />
@@ -43,6 +47,7 @@
       <Button layoutX="27.0" layoutY="114.0" mnemonicParsing="false" onAction="#play" prefHeight="53.0" prefWidth="147.0" text="Play" />
       <Button layoutX="27.0" layoutY="177.0" mnemonicParsing="false" onAction="#showPlayerName" prefHeight="53.0" prefWidth="147.0" text="Set player name" textAlignment="CENTER" />
       <Button layoutX="27.0" layoutY="240.0" mnemonicParsing="false" onAction="#showHighscore" prefHeight="53.0" prefWidth="147.0" text="Highscore" />
+      <Button layoutX="27.0" layoutY="303.0" mnemonicParsing="fakse" onAction="#showColorPicker" prefHeight="53.0" prefWidth="147.0" text="Color Picker" />
     </children>
   </Pane>
 </AnchorPane>

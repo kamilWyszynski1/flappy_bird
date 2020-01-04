@@ -87,12 +87,6 @@ public class GameController{
             streak = 300;
         }
 
-//        observator.attach(new TimelineObserver(observator, rewind));
-//        observator.attach(new TimelineObserver(observator, jumping));
-//        observator.attach(new TimelineObserver(observator, collision));
-//        observator.attach(new TimelineObserver(observator, pointsTimeline));
-//        observator.attach(new TimelineObserver(observator, birdChange));
-
     }
 
     private void initiliaze_pipes(){

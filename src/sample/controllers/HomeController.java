@@ -11,6 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import sample.models.CustomColorPicker;
 import sample.models.PlayerModel;
 import sample.models.ScoreModel;
 
@@ -37,6 +38,8 @@ public class HomeController {
     private Pane main_menu;
     @FXML
     private Pane highscore;
+    @FXML
+    private CustomColorPicker colorPicker;
     @FXML
     private Label error;
     @FXML
@@ -100,10 +103,17 @@ public class HomeController {
     }
 
     @FXML
+    private void showColorPicker() {
+        colorPicker.setVisible(true);
+        main_menu.setVisible(false);
+    }
+
+    @FXML
     private void back(){
         main_menu.setVisible(true);
         name_menu.setVisible(false);
         highscore.setVisible(false);
+        colorPicker.setVisible(false);
     }
 
     /**Handles play button - switches fxml and controllers, passes playerModel to GameController.*/
