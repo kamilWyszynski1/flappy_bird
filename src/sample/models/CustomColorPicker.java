@@ -13,14 +13,14 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.util.ArrayList;
 
 public class CustomColorPicker extends Pane {
     @FXML private ColorPicker picker;
     @FXML private Button submit;
     @FXML private ImageView bird;
     @FXML private Button save;
-    BufferedImage image;
+    ArrayList<BufferedImage> birds = new ArrayList<>();
     String birdURL;
 
     public CustomColorPicker() throws IOException {
@@ -34,7 +34,11 @@ public class CustomColorPicker extends Pane {
         } catch (IOException exception) {
             throw new RuntimeException(exception);
         }
-        image = ImageIO.read(new File(bird.getImage().getUrl().replace("file:", "")));
+        birdURL = bird.getImage().getUrl().replace("file:", "");
+
+        birds.add(ImageIO.read(new File(birdURL)));
+        birds.add(ImageIO.read(new File(birdURL.replace("down", "mid"))));
+        birds.add(ImageIO.read(new File(birdURL.replace("down", "up"))));
 
         picker.setLayoutX(77);
         picker.setLayoutY(250);
@@ -43,8 +47,6 @@ public class CustomColorPicker extends Pane {
         submit.setText("Submit");
         bird.setLayoutX(77);
         bird.setLayoutY(290);
-        birdURL = bird.getImage().getUrl().replace("file:", "");
-
     }
 
     @FXML
@@ -52,36 +54,42 @@ public class CustomColorPicker extends Pane {
         System.out.println(picker.getValue());
 
         int rgb = getRGB(picker.getValue());
-        System.out.println(rgb);
-        for (int i = 0; i < 12; i++) {
-            image.setRGB(21 + i, 14, rgb);
-            image.setRGB(21 + i, 15, rgb);
+        for (BufferedImage image: birds) {
+            for (int i = 0; i < 12; i++) {
+                image.setRGB(20 + i, 14, rgb);
+                image.setRGB(20 + i, 15, rgb);
+            }
+
+            for (int i = 0; i < 10; i++) {
+                image.setRGB(20 + i, 18, rgb);
+                image.setRGB(20 + i, 19, rgb);
+            }
+            for (int i = 18; i < 21; i++) {
+                image.setRGB(i, 16, rgb);
+                image.setRGB(i, 17, rgb);
+            }
         }
 
-        for (int i = 0; i < 10; i++) {
-            image.setRGB(21 + i, 18, rgb);
-            image.setRGB(21 + i, 19, rgb);
-        }
-        for (int i = 19; i < 22; i++) {
-            image.setRGB(i, 16, rgb);
-            image.setRGB(i, 17, rgb);
-        }
 
-        bird.setImage(SwingFXUtils.toFXImage(image, null));
-
+        bird.setImage(SwingFXUtils.toFXImage(birds.get(0), null));
 
     }
 
     private int getRGB(javafx.scene.paint.Color value) {
-        int rgb = (int)(value.getRed() * 255);
-        rgb = (rgb << 8) + (int)(value.getGreen()*255);
-        rgb = (rgb << 8) + (int)(value.getBlue()*255);
-        return rgb;
+       return  ((0xFF) << 24) |
+                (((int)(value.getRed()*255) & 0xFF) << 16) |
+                (((int)(value.getGreen()*255) & 0xFF) << 8)  |
+                (((int) (value.getBlue() * 255) & 0xFF));
     }
 
     @FXML
     private void saveBird() throws IOException {
-        File outputfile = new File(birdURL);
-        ImageIO.write(image, "png", outputfile);
+        File down = new File(birdURL);
+        File mid = new File(birdURL.replace("down", "mid"));
+        File up = new File(birdURL.replace("down", "up"));
+
+        ImageIO.write(birds.get(0), "png", down);
+        ImageIO.write(birds.get(1), "png", mid);
+        ImageIO.write(birds.get(2), "png", up);
     }
 }
